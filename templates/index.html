@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Günlük görevlerini kolayca takip et.">
+  <title>Görev Takipçisi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header">
+      <p class="eyebrow">BUGÜNÜN PLANI</p>
+      <h1>Görev Takipçisi</h1>
+      <p class="subtitle">Küçük adımlar, büyük ilerlemeler.</p>
+    </header>
+
+    <section class="task-panel" aria-labelledby="task-heading">
+      <h2 id="task-heading">Görevlerin</h2>
+      <form class="add-form" action="{{ url_for('add_task') }}" method="post">
+        <label class="visually-hidden" for="title">Yeni görev</label>
+        <input id="title" name="title" type="text" maxlength="120" placeholder="Örn. Python çalış" required>
+        <button type="submit">Görev ekle</button>
+      </form>
+
+      {% if tasks %}
+        <ul class="task-list">
+          {% for task in tasks %}
+            <li class="task-item {% if task['is_done'] %}is-done{% endif %}">
+              <form action="{{ url_for('toggle_task', task_id=task['id']) }}" method="post">
+                <button class="check-button" type="submit" aria-label="{% if task['is_done'] %}Tamamlanmadı olarak işaretle{% else %}Tamamlandı olarak işaretle{% endif %}">
+                  {% if task['is_done'] %}<span aria-hidden="true">✓</span>{% endif %}
+                </button>
+              </form>
+              <span class="task-title">{{ task['title'] }}</span>
+              <form action="{{ url_for('delete_task', task_id=task['id']) }}" method="post">
+                <button class="delete-button" type="submit" aria-label="{{ task['title'] }} görevini sil">Sil</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state">
+          <span aria-hidden="true">✦</span>
+          <p>Henüz görev yok. İlk görevini ekleyerek başlayabilirsin.</p>
+        </div>
+      {% endif %}
+
+      <p class="task-count">{{ tasks|length }} görev</p>
+    </section>
+    <footer>Flask ve SQLite ile yapıldı</footer>
+  </main>
+</body>
+</html>
